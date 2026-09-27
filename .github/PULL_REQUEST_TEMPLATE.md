@@ -1,4 +1,3 @@
-<!-- PR 模板，创建 Pull Request 时自动填充 -->
 ## 关联 Issue
 Closes #<issue-number>
 
