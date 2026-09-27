@@ -5,7 +5,7 @@ const express = require('express');
 const { register, login, authMiddleware } = require('./auth');
 
 // 引入任务相关函数
-const { createTask, listTasks, updateTask, deleteTask } = require('./tasks');
+const { createTask, listTasks, updateTask, deleteTask, getTask } = require('./tasks');
 
 // 创建路由实例
 const router = express.Router();
@@ -84,6 +84,18 @@ router.delete('/tasks/:id', (req, res) => {
     res.status(204).end();
   } catch (err) {
     res.status(404).json({ message: err.message });
+  }
+});
+
+// 任务详情：GET /api/tasks/:id
+router.get('/tasks/:id', (req, res) => {
+  // 调用 getTask
+  const result = getTask(req.params.id);
+  if (result){
+    // 返回任务详情
+    res.json(result);
+  } else {
+    res.status(404).json({ message: '任务不存在' });
   }
 });
 
