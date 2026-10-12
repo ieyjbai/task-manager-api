@@ -5,13 +5,10 @@ const { tasks, nextTaskId } = require('./data');
 function createTask(userId, { title, done = false }) {
   // 标题不能为空
   if (!title) throw new Error('标题不能为空');
-
   // 构造任务对象，包含自增 ID、所属用户、标题、完成状态、创建时间
   const task = { id: nextTaskId(), userId, title, done, createdAt: new Date() };
-
   // 存入内存数组
   tasks.push(task);
-
   // 返回新任务
   return task;
 }
@@ -20,16 +17,12 @@ function createTask(userId, { title, done = false }) {
 function listTasks(userId, { done, page = 1, limit = 10 }) {
   // 先筛选出属于当前用户的任务
   let result = tasks.filter(t => t.userId === userId);
-
   // 如果传入了 done 参数，按完成状态过滤
   if (done !== undefined) result = result.filter(t => t.done === done);
-
   // 按创建时间倒序排列（最新的在前）
   result.sort((a, b) => b.createdAt - a.createdAt);
-
   // 计算分页起始索引
   const start = (page - 1) * limit;
-
   // 返回当前页的数据
   return result.slice(start, start + Number(limit));
 }
@@ -38,16 +31,12 @@ function listTasks(userId, { done, page = 1, limit = 10 }) {
 function updateTask(userId, id, updates) {
   // 查找属于当前用户且 ID 匹配的任务
   const task = tasks.find(t => t.id === Number(id) && t.userId === userId);
-
   // 找不到则抛出错误
   if (!task) throw new Error('任务不存在');
-
   // 如果传入了 title，更新标题
   if (updates.title !== undefined) task.title = updates.title;
-
   // 如果传入了 done，更新完成状态
   if (updates.done !== undefined) task.done = updates.done;
-
   // 返回更新后的任务
   return task;
 }
@@ -56,21 +45,18 @@ function updateTask(userId, id, updates) {
 function deleteTask(userId, id) {
   // 查找任务索引
   const index = tasks.findIndex(t => t.id === Number(id) && t.userId === userId);
-
   // 找不到则抛出错误
   if (index === -1) throw new Error('任务不存在');
-
   // 从数组中删除并返回被删除的任务
   return tasks.splice(index, 1)[0];
 }
 
 // 显示任务详情
-function getTask(id) {
-  // 先筛选出属于当前用户的任务
-  let result = tasks.filter(t => t.id === Number(id));
-  
-  // 返回当前页的数据
-  return result.length > 0 ? result[0] : null;
+function getTask(userId, id) {
+  // 按 id + 用户 id 一起查找，只能看自己的任务
+  const task = tasks.find(t => t.id === Number(id) && t.userId === userId);
+  // 找到就返回对象，没找到返回 null
+  return task || null;
 }
 
 // 导出所有任务操作函数

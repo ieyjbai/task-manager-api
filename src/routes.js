@@ -1,12 +1,9 @@
 // 引入 express 用于创建路由
 const express = require('express');
-
 // 引入认证相关函数和中间件
 const { register, login, authMiddleware } = require('./auth');
-
 // 引入任务相关函数
 const { createTask, listTasks, updateTask, deleteTask, getTask } = require('./tasks');
-
 // 创建路由实例
 const router = express.Router();
 
@@ -53,16 +50,26 @@ router.post('/tasks', (req, res) => {
 router.get('/tasks', (req, res) => {
   // 从查询参数中解构 done、page、limit
   const { done, page, limit } = req.query;
-
   // 调用 listTasks，处理 done 的布尔值转换和分页默认值
   const result = listTasks(req.userId, {
     done: done === undefined ? undefined : done === 'true',
     page: Number(page) || 1,
     limit: Number(limit) || 10,
   });
-
   // 返回任务列表
   res.json(result);
+});
+
+// 任务详情：GET /api/tasks/:id
+router.get('/tasks/:id', (req, res) => {
+  // 调用 getTask，传入当前用户ID + 任务ID
+  const result = getTask(req.userId, req.params.id);
+  if (result) {
+    // 返回任务详情
+    res.json(result);
+  } else {
+    res.status(404).json({ message: '任务不存在' });
+  }
 });
 
 // 更新任务：PUT /api/tasks/:id
@@ -84,18 +91,6 @@ router.delete('/tasks/:id', (req, res) => {
     res.status(204).end();
   } catch (err) {
     res.status(404).json({ message: err.message });
-  }
-});
-
-// 任务详情：GET /api/tasks/:id
-router.get('/tasks/:id', (req, res) => {
-  // 调用 getTask
-  const result = getTask(req.params.id);
-  if (result){
-    // 返回任务详情
-    res.json(result);
-  } else {
-    res.status(404).json({ message: '任务不存在' });
   }
 });
 

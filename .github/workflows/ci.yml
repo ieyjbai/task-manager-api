@@ -21,7 +21,7 @@ jobs:
     # 矩阵策略，同时测试多个 Node.js 版本
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [18, 20, 24]
 
     # 步骤列表
     steps:
